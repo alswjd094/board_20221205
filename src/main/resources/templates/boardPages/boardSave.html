@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>save</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+</head>
+<body>
+<th:block th:replace="commonPages/header :: header"></th:block>
+<div class="container">
+  <form action="/board/save" method="post" name="boardForm" >
+    <input type="text" name="boardWriter" placeholder="작성자" class="form-control">
+    <input type="text" name="boardTitle" placeholder="제목" class="form-control">
+    <input type="password" name="boardPass" placeholder="비밀번호" class="form-control">
+    <textarea name="boardContents" cols="30" rows="10" placeholder="내용을 입력하세요" class="form-control"></textarea>
+    <input type="submit" value="저장" class="btn btn-primary">
+  </form>
+</div>
+</body>
+</html>

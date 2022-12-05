@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>detail</title>
+   <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+</head>
+<body>
+<div class="container">
+  <table class="table table-hover table-striped">
+    <tr>
+      <th>번호</th>
+      <td th:text="${board.id}"></td>
+    </tr>
+    <tr>
+      <th>작성자</th>
+      <td th:text="${board.boardWriter}"></td>
+    </tr>
+    <tr>
+      <th>제목</th>
+      <td th:text="${board.boardTitle}"></td>
+    </tr>
+    <tr>
+      <th>내용</th>
+      <td th:text="${board.boardContents}"></td>
+    </tr>
+  </table>
+  <button th:onclick="updateFn([[${board.id}]])" class="btn btn-warning">수정</button>
+  <button th:onclick="deleteFn([[${board.id}]])" class="btn btn-danger">삭제</button>
+  <span id="deleteCheck"></span>
+</div>
+</body>
+
+<script th:inline="javascript">
+const deleteFn = () => {
+  const deleteCheck = document.getElementById("deleteCheck");
+  // deleteCheck.innerHTML= <input type="password" name="boardPass" id="boardPass">;
+
+}
+</script>
+</html>
