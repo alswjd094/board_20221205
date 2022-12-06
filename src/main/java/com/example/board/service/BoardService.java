@@ -6,6 +6,7 @@ import com.example.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,8 +43,18 @@ public class BoardService {
            return null;
        }
     }
+    @Transactional
+//특별한 쿼리를 호출하는 경우 작성
+    public void updateHits(Long id) {
+        boardRepository.updateHits(id);
+    }
 
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public void update(BoardDTO boardDTO) {
+        BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
+        boardRepository.save(boardEntity);
     }
 }
