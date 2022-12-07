@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>update</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <script th:src="@{/js/axios.min.js}"></script>
+<!--    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>-->
 </head>
 <body>
 <th:block th:replace="commonPages/header :: header"></th:block>
@@ -16,10 +18,37 @@
     <textarea name="boardContents" cols="30" rows="10" th:field="${board.boardContents}" class="form-control"></textarea>
     <input type="hidden" name="boardHits" th:value="${board.boardHits}">
     <input type="submit" value="수정" onclick="updateFnn()" class="btn btn-warning">
+    <input type="submit" value="수정(axios)" onclick="updateAxios()" class="btn btn-warning">
   </form>
 </div>
 </body>
 <script th:inline="javascript">
+    const updateAxios = () => {
+        const id = document.querySelector('input[name="id"]').value;
+        const title = document.getElementsByName("boardTitle")[0].value;
+        const writer = document.querySelector('input[name=boardWriter]').value;
+        const pass = document.querySelector('input[name=boardPass]').value;
+        const contents = document.querySelector('input[name=boardContents]').value;
+        const hits = document.querySelector('input[name=boardHits]').value;
+
+        axios({
+            method: "put",
+            url: "/board/update/" + id,
+            data: {
+                id: id,
+                boardTitle: title,
+                boardWriter: writer,
+                boardPass: pass,
+                boardContents: contents,
+                boardHits: hits
+            }
+        }).then(res => {
+            console.log("수정성공");
+            location.href = "/board/update/" + id;
+        }).catch(res => {
+            console.log("수정실패");
+        })
+    }
     const updateFnn = () => {
         updateForm.submit();
     }

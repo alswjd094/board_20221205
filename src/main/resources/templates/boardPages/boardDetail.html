@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>detail</title>
    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
-    <script th:src="@{/js/jquery.js}" ></script>
+    <script th:src="@{/js/axios.min.js}"></script>
 </head>
 <body>
 <th:block th:replace="commonPages/header :: header"></th:block>
@@ -33,6 +33,10 @@
     <tr>
       <th>조회수</th>
       <td th:text="${board.boardHits}"></td>
+    </tr>
+    <tr th:if="${board.fileAttached == 1}">
+      <th>image</th>
+      <td><img th:src="@{|/upload/${board.storedFileName}}" alt=""></td>
     </tr>
   </table>
   <div class="container">
@@ -72,10 +76,18 @@
     if(value == "update"){
     location.href="/board/update/"+id;
   }else if(value == "delete"){
-    location.href="/board/delete/"+id;
+    // location.href="/board/delete/"+id;
+      axios({
+        method: "delete",
+        url: "/board/" + id
+      }).then(res=>{
+        location.href="/board/";
+      }).catch(err=>{
+        alert("삭제실패");
+      })
   }
   }else{
-    alert("비밀번호가 일치하지 않습니다.");
+    alert("비밀번호 불일치");
   }
   }
 
