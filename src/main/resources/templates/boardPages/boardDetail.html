@@ -35,46 +35,81 @@
       <td th:text="${board.boardHits}"></td>
     </tr>
   </table>
-  <button th:onclick="updateFn([[${board.id}]])" class="btn btn-warning">수정</button>
-  <span id="updateCheck"></span>
-  <span id="updateCheckForm"></span>
-  <button th:onclick="deleteFn([[${board.id}]])" class="btn btn-danger">삭제</button>
-  <span id="deleteCheck" ></span>
-  <span id="deleteCheckForm"></span>
+  <div class="container">
+    <button class="btn btn-primary" onclick="listReq()">목록</button>
+    <button class="btn btn-warning" onclick="req('update')">수정</button>
+    <button class="btn btn-danger" onclick="req('delete')">삭제</button>
+  </div>
+  <div id="pass-check">
+
+  </div>
 </div>
+  <!--  <button th:onclick="updateFn([[${board.id}]])" class="btn btn-warning">수정</button>-->
+<!--  <span id="updateCheck"></span>-->
+<!--  <span id="updateCheckForm"></span>-->
+<!--  <button th:onclick="deleteFn([[${board.id}]])" class="btn btn-danger">삭제</button>-->
+<!--  <span id="deleteCheck" ></span>-->
+<!--  <span id="deleteCheckForm"></span>-->
+<!--</div>-->
 </body>
 
 <script th:inline="javascript">
-const deleteFn = () => {
-  const deleteCheck = document.getElementById("deleteCheck");
-  const deleteCheckForm = document.getElementById("deleteCheckForm");
-   deleteCheck.innerHTML = '<input type="password" name="boardPass" id="boardPass" placeholder="비밀번호 입력">';
-   deleteCheckForm.innerHTML ='<input type="submit" value="확인" onclick="deleteCheckFn()" class="btn btn-primary">';
-    }
-
- const deleteCheckFn = () => {
+  const listReq = () => {
+    location.href="/board/";
+  }
+    const req = (value) => {
+    console.log("value",value);
+    const passCheckArea = document.getElementById("pass-check");
+    passCheckArea.innerHTML="<input type=\"text\" id=\"password\" placeholder=\"password\">\n" +
+    "    <button class=\"btn btn-outline-dark\" onclick=\"passCheck('"+value+"')\">확인</button>";
+  }
+    const passCheck = (value) => {
+    console.log(value);
+    const password = document.getElementById("password").value;
     const passDB = [[${board.boardPass}]];
-    const pass = document.getElementById("boardPass").value;
-    if(passDB === pass){
-    location.replace('/board/delete/[[${board.id}]]');
-    }else{
-      alert("비밀번호가 일치하지 않습니다.");
-    }
-}
-const updateFn = () => {
-  const updateCheck = document.getElementById("updateCheck");
-  const updateCheckForm = document.getElementById("updateCheckForm");
-  updateCheck.innerHTML = '<input type="password" name="boardPass" id="boardPass" placeholder="비밀번호 입력">';
-  updateCheckForm.innerHTML ='<input type="submit" value="확인" onclick="updateCheckFn()" class="btn btn-primary">';
-}
-const updateCheckFn = () => {
-  const passDB = [[${board.boardPass}]];
-  const pass = document.getElementById("boardPass").value;
-  if(passDB === pass){
-    location.replace('/board/update/[[${board.id}]]');
+    const id = [[${board.id}]];
+    if(password == passDB){
+    if(value == "update"){
+    location.href="/board/update/"+id;
+  }else if(value == "delete"){
+    location.href="/board/delete/"+id;
+  }
   }else{
     alert("비밀번호가 일치하지 않습니다.");
   }
-}
+  }
+
+
+// const deleteFn = () => {
+//   const deleteCheck = document.getElementById("deleteCheck");
+//   const deleteCheckForm = document.getElementById("deleteCheckForm");
+//    deleteCheck.innerHTML = '<input type="password" name="boardPass" id="boardPass" placeholder="비밀번호 입력">';
+//    deleteCheckForm.innerHTML ='<input type="submit" value="확인" onclick="deleteCheckFn()" class="btn btn-primary">';
+//     }
+//
+//  const deleteCheckFn = () => {
+//     const passDB = [[${board.boardPass}]];
+//     const pass = document.getElementById("boardPass").value;
+//     if(passDB === pass){
+//     location.replace('/board/delete/[[${board.id}]]');
+//     }else{
+//       alert("비밀번호가 일치하지 않습니다.");
+//     }
+// }
+// const updateFn = () => {
+//   const updateCheck = document.getElementById("updateCheck");
+//   const updateCheckForm = document.getElementById("updateCheckForm");
+//   updateCheck.innerHTML = '<input type="password" name="boardPass" id="boardPass" placeholder="비밀번호 입력">';
+//   updateCheckForm.innerHTML ='<input type="submit" value="확인" onclick="updateCheckFn()" class="btn btn-primary">';
+// }
+// const updateCheckFn = () => {
+//   const passDB = [[${board.boardPass}]];
+//   const pass = document.getElementById("boardPass").value;
+//   if(passDB === pass){
+//     location.replace('/board/update/[[${board.id}]]');
+//   }else{
+//     alert("비밀번호가 일치하지 않습니다.");
+//   }
+// }
 </script>
 </html>

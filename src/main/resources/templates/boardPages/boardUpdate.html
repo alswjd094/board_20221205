@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>update</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
-    <script th:src="@{/js/jquery.js}" ></script>
 </head>
 <body>
 <th:block th:replace="commonPages/header :: header"></th:block>
@@ -15,6 +14,7 @@
     <input type="text" name="boardWriter" th:value="${board.boardWriter}" class="form-control" readonly>
     <input type="text" name="boardTitle" th:value="${board.boardTitle}" class="form-control" >
     <textarea name="boardContents" cols="30" rows="10" th:field="${board.boardContents}" class="form-control"></textarea>
+    <input type="hidden" name="boardHits" th:value="${board.boardHits}">
     <input type="submit" value="수정" onclick="updateFnn()" class="btn btn-warning">
   </form>
 </div>
