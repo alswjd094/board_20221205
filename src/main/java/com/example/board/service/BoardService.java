@@ -23,34 +23,34 @@ public class BoardService {
     private final BoardFileRepository boardFileRepository;
 
     public Long save(BoardDTO boardDTO) throws IOException {
-        if(boardDTO.getBoardFile().isEmpty()){
+//        if(boardDTO.getBoardFile().isEmpty()){
+        if(boardDTO.getBoardFile().size()==0){
             System.out.println("파일 없음");
             BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
             return boardRepository.save(boardEntity).getId();
         } else{
             System.out.println("파일 있음");
-            //boardDTO 객체에 담긴 파일 꺼냄
-            MultipartFile boardFile = boardDTO.getBoardFile();
-            //파일 원본 이름 가져오기
-            String originalFileName = boardFile.getOriginalFilename();
-            //서버 관리용 이름 만듦
-            String storedFileName = System.currentTimeMillis()+"_"+originalFileName;
-            //파일 실제 저장 위치 지정
-            String savePath = "C:\\springboot_img\\"+storedFileName;
-            //파일 저장 처리
-            boardFile.transferTo(new File(savePath));
-
             //dto->entity 옮겨담기
             BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
             //게시글(부모 데이터) 저장, id값 추가된 객체 가져옴
             Long savedId = boardRepository.save(boardEntity).getId();
-
             //부모데이터를 조회해야함
             BoardEntity entity = boardRepository.findById(savedId).get();
-            //boardfileentity 변환할 때 entity와 파일원본이름을 같이 넘겨줌
-            BoardFileEntity boardFileEntity = BoardFileEntity.toSaveBoardFileEntity(entity,originalFileName,storedFileName);
 
-            boardFileRepository.save(boardFileEntity);
+            for(MultipartFile boardFile:boardDTO.getBoardFile()){
+                //파일 원본 이름 가져오기
+                String originalFileName = boardFile.getOriginalFilename();
+                //서버 관리용 이름 만듦
+                String storedFileName = System.currentTimeMillis()+"_"+originalFileName;
+                //파일 실제 저장 위치 지정
+                String savePath = "C:\\springboot_img\\"+storedFileName;
+                //파일 저장 처리
+                boardFile.transferTo(new File(savePath));
+                //boardfileentity 변환할 때 부모entity와 파일원본이름,저장이름을 같이 넘겨줌
+                BoardFileEntity boardFileEntity = BoardFileEntity.toSaveBoardFileEntity(entity,originalFileName,storedFileName);
+
+                boardFileRepository.save(boardFileEntity);
+            }
             return savedId;
         }
 
