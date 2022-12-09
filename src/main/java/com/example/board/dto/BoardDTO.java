@@ -3,6 +3,7 @@ package com.example.board.dto;
 import com.example.board.entity.BoardEntity;
 import com.example.board.entity.BoardFileEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 
 public class BoardDTO {
     private Long id;
@@ -29,6 +31,19 @@ public class BoardDTO {
     private int fileAttached;
     private List<String> originalFileName;
     private List<String> storedFileName;
+
+    //페이징 목록 변환을 위한 생성자
+    //id, boardTitle, boardWriter boardCreatedTime, boardHits
+    //alt + insert -> constructor
+
+
+    public BoardDTO(Long id, String boardWriter, String boardTitle, int boardHits, LocalDateTime boardCreatedTime) {
+        this.id = id;
+        this.boardWriter = boardWriter;
+        this.boardTitle = boardTitle;
+        this.boardHits = boardHits;
+        this.boardCreatedTime = boardCreatedTime;
+    }
 
     public static BoardDTO toBoardDTO(BoardEntity boardEntity){
         BoardDTO boardDTO = new BoardDTO();

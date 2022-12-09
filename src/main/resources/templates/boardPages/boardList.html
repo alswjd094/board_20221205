@@ -16,7 +16,7 @@
       <th>작성시간</th>
       <th>조회수</th>
     </tr>
-    <tr th:each="board: ${findAll}">
+    <tr th:each="board: ${boardList}">
       <td th:text="${board.id}"></td>
       <td th:text="${board.boardWriter}"></td>
       <td> <a th:href="@{|/board/${board.id}|}" th:text="${board.boardTitle}"></a></td>

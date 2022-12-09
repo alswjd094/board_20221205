@@ -68,4 +68,8 @@ public class BoardEntity extends BaseEntity{
         boardEntity.setBoardHits(boardDTO.getBoardHits());
         return boardEntity;
     }
+
+    //CommentEntity와 참조관계
+    @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CommentEntity> commentEntityList = new ArrayList<>();
 }

@@ -6,6 +6,10 @@ import com.example.board.entity.BoardFileEntity;
 import com.example.board.repository.BoardFileRepository;
 import com.example.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +28,7 @@ public class BoardService {
 
     public Long save(BoardDTO boardDTO) throws IOException {
 //        if(boardDTO.getBoardFile().isEmpty()){
-        if(boardDTO.getBoardFile().size()==0){
+        if(boardDTO.getBoardFile() == null || boardDTO.getBoardFile().size()==0){
             System.out.println("파일 없음");
             BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
             return boardRepository.save(boardEntity).getId();
@@ -58,7 +62,7 @@ public class BoardService {
 @Transactional
     public List<BoardDTO> findAll() {
 
-        List<BoardEntity> boardEntityList = boardRepository.findAll();
+        List<BoardEntity> boardEntityList = boardRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
         List<BoardDTO> boardDTOList = new ArrayList<>();
         for(BoardEntity boardEntity:boardEntityList){
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
@@ -92,5 +96,24 @@ public class BoardService {
     public void update(BoardDTO boardDTO) {
         BoardEntity boardEntity = BoardEntity.toUpdateEntity(boardDTO);
         boardRepository.save(boardEntity);
+    }
+
+    public Page<BoardDTO> paging(Pageable pageable) {
+        int page = pageable.getPageNumber() - 1;
+        //page: 가장 첫번째 데이터(0)
+        final int pageLimit = 3;
+        //pageLimit: 개수 , (0,3) 첫번째 자리부터 3개
+        Page<BoardEntity> boardEntities = boardRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+        //Page<BoardEntity> -> Page<BoardDTO>
+        Page<BoardDTO> boardList = boardEntities.map(
+                //boardEntities에 담김 boardEntity 객체를 board에 담아서
+                //boardDTO 객체로 하나씩 옮겨 담는 과정
+                //boardDTO 생성자 순서와 동일하게
+                board->new BoardDTO(board.getId(),
+                        board.getBoardWriter(),
+                        board.getBoardTitle(),
+                        board.getBoardHits(),
+                        board.getCreatedTime()));
+        return boardList;
     }
 }
