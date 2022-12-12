@@ -37,7 +37,7 @@ public class BoardEntity extends BaseEntity{
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BoardFileEntity> boardFileEntityList = new ArrayList<>();
 
-    public static BoardEntity toSaveEntity(BoardDTO boardDTO){
+    public static BoardEntity toSaveEntity(BoardDTO boardDTO,MemberEntity memberEntity){
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
@@ -45,10 +45,11 @@ public class BoardEntity extends BaseEntity{
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(0);
         boardEntity.setFileAttached(0);
+        boardEntity.setMemberEntity(memberEntity);
         return boardEntity;
     }
 
-    public static BoardEntity toSaveFileEntity(BoardDTO boardDTO){
+    public static BoardEntity toSaveFileEntity(BoardDTO boardDTO,MemberEntity memberEntity){
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
@@ -56,8 +57,10 @@ public class BoardEntity extends BaseEntity{
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(0);
         boardEntity.setFileAttached(1);
+        boardEntity.setMemberEntity(memberEntity);
         return boardEntity;
     }
+    //update 처리할 때도 MemberEntity객체를 고려해야 함
     public static BoardEntity toUpdateEntity(BoardDTO boardDTO){
         BoardEntity boardEntity =new BoardEntity();
         boardEntity.setId(boardDTO.getId());
@@ -72,4 +75,9 @@ public class BoardEntity extends BaseEntity{
     //CommentEntity와 참조관계
     @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CommentEntity> commentEntityList = new ArrayList<>();
+
+    //회원-게시글 연관관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private MemberEntity memberEntity;
 }

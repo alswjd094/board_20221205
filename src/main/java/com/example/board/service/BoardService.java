@@ -3,8 +3,10 @@ package com.example.board.service;
 import com.example.board.dto.BoardDTO;
 import com.example.board.entity.BoardEntity;
 import com.example.board.entity.BoardFileEntity;
+import com.example.board.entity.MemberEntity;
 import com.example.board.repository.BoardFileRepository;
 import com.example.board.repository.BoardRepository;
+import com.example.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,16 +26,19 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
 
+    private final MemberRepository memberRepository;
+
     public Long save(BoardDTO boardDTO) throws IOException {
+       MemberEntity memberEntity = memberRepository.findByMemberEmail(boardDTO.getBoardWriter()).get();
 //        if(boardDTO.getBoardFile().isEmpty()){
         if(boardDTO.getBoardFile() == null || boardDTO.getBoardFile().size()==0){
             System.out.println("파일 없음");
-            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO,memberEntity);
             return boardRepository.save(boardEntity).getId();
         } else{
             System.out.println("파일 있음");
             //dto->entity 옮겨담기
-            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
+            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO,memberEntity);
             //게시글(부모 데이터) 저장, id값 추가된 객체 가져옴
             Long savedId = boardRepository.save(boardEntity).getId();
             //부모데이터를 조회해야함
@@ -115,5 +118,22 @@ public class BoardService {
                         board.getBoardHits(),
                         board.getCreatedTime()));
         return boardList;
+    }
+
+    public List<BoardDTO> search(String type, String q) {
+        List<BoardDTO> boardDTOList = new ArrayList<>();
+        List<BoardEntity> boardEntityList = null;
+        if(type.equals("boardWriter")){
+            boardEntityList = boardRepository.findByBoardWriterContainingOrderByIdDesc(q);
+        } else if(type.equals("boardTitle")){
+            boardEntityList = boardRepository.findByBoardTitleContainingOrderByIdDesc(q);
+        } else{
+            boardEntityList = boardRepository.findByBoardTitleContainingOrBoardWriterContainingOrderByIdDesc(q,q);
+        }
+        for(BoardEntity boardEntity:boardEntityList){
+            BoardDTO boardDTO = BoardDTO.toBoardDTO(boardEntity);
+            boardDTOList.add(boardDTO);
+        }
+        return boardDTOList;
     }
 }

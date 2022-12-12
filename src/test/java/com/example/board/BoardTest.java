@@ -1,10 +1,13 @@
 package com.example.board;
 import com.example.board.dto.BoardDTO;
 import com.example.board.dto.CommentDTO;
+import com.example.board.dto.MemberDTO;
 import com.example.board.entity.BoardEntity;
 import com.example.board.entity.CommentEntity;
+import com.example.board.entity.MemberEntity;
 import com.example.board.repository.BoardRepository;
 import com.example.board.repository.CommentRepository;
+import com.example.board.repository.MemberRepository;
 import com.example.board.service.BoardService;
 import com.example.board.service.CommentService;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +39,10 @@ public class BoardTest {
     private CommentService commentService;
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
     private BoardDTO newBoardDTO(int i){
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setBoardWriter("writer"+i);
@@ -193,4 +200,58 @@ public class BoardTest {
                                     board.getCreatedTime()));
 
  }
+    @Test
+    @Transactional
+    @DisplayName("검색 테스트")
+    public void searchTest(){
+        //제목이나 작성자에 a가 포함된 검색
+        String q ="a";
+        List<BoardEntity> boardEntityList = boardRepository.findByBoardTitleContainingOrBoardWriterContainingOrderByIdDesc(q,q);
+        for(BoardEntity boardEntity : boardEntityList){
+            BoardDTO boardDTO = BoardDTO.toBoardDTO(boardEntity);
+            System.out.println("boardDTO = " + boardDTO);
+        }
+ }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    @DisplayName("set null 테스트")
+    public void setNullTest() throws IOException{
+        /*
+        1. 회원가입
+        2. 위에서 가입한 회원이 게시글 작성
+        3. 회원 삭제
+        4. board_table 확인
+         */
+        //1.
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setMemberEmail("member11111");
+        memberDTO.setMemberPassword("1234");
+        memberDTO.setMemberName("name1");
+        memberDTO.setMemberAge(11);
+        memberDTO.setMemberPhone("010-1111-1111");
+
+        MemberEntity memberEntity = MemberEntity.toSaveEntity(memberDTO);
+        Long memberId = memberRepository.save(memberEntity).getId();
+
+        //2.
+        BoardDTO newBoard = new BoardDTO();
+        newBoard.setBoardWriter(memberDTO.getMemberEmail());
+        newBoard.setBoardTitle("회원 삭제용 제목");
+        newBoard.setBoardPass("회원 삭제용 비번");
+        newBoard.setBoardContents("회원 삭제용 내용");
+        Long savedId = boardService.save(newBoard);
+
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    public void memberDelete(){
+        //3.
+        memberRepository.deleteById(10L);
+                                //member_table id (board_table id X)
+    }
+
 }

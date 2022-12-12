@@ -112,4 +112,10 @@ public class BoardController {
         return new ResponseEntity<>(HttpStatus.OK);
    }
 
+   @GetMapping("/board/search")
+    public String search(@RequestParam("type") String type, @RequestParam("q") String q, Model model){
+        List<BoardDTO> searchList = boardService.search(type,q);
+        model.addAttribute("boardList",searchList);
+        return"boardPages/boardList";
+   }
 }

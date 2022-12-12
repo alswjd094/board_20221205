@@ -34,4 +34,7 @@ public static CommentEntity toCommentEntity(BoardEntity entity,CommentDTO commen
     return commentEntity;
 }
 
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "member_id")
+private MemberEntity memberEntity;
 }
